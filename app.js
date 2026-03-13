@@ -13,7 +13,6 @@ const leaveRoutes = require("./routes/leaveRoutes");
 
 app.use('/api/leaves', leaveRoutes);
 
-// Register [cite: 10]
 app.post("/api/register", async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
@@ -25,13 +24,12 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-// Login [cite: 10, 17]
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (user && await bcrypt.compare(password, user.password)) {
-      if (!user.isActive) return res.status(403).json({ msg: "Account deactivated" }); // [cite: 25]
+      if (!user.isActive) return res.status(403).json({ msg: "Account deactivated" }); 
       const token = jwt.sign({ id: user._id, role: user.role }, "secret_key", { expiresIn: "1d" });
       return res.json({ success: true, token });
     }
