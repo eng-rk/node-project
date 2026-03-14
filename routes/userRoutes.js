@@ -1,8 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const { createUser, getUsers } = require("../controllers/userControllers");
 
-router.get("/users", getUsers);
-router.post("/users", createUser);
+const { getUsers, deactivateUser } = require("../controllers/userController");
+
+const { verifyToken, checkRole } = require("../middleware/auth");
+
+router.get("/", verifyToken, checkRole(["admin"]), getUsers);
+
+router.patch(
+  "/:id/deactivate",
+  verifyToken,
+  checkRole(["admin"]),
+  deactivateUser
+);
 
 module.exports = router;

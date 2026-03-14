@@ -1,20 +1,37 @@
-const User = require("../models/User.js");
-const createUser = async(req, res) => {
-    try{
-        res.send("User created");
-    }catch(err){
-        res.status(500).json({ message: err.message });
-    }
-};
+const User = require("../models/User");
+
 const getUsers = async (req, res) => {
-    try {
-        res.send("All users");
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+
+  try {
+
+    const users = await User.find().select("-password");
+
+    res.json(users);
+
+  } catch (err) {
+
+    res.status(500).json({ msg: err.message });
+
+  }
 };
 
-module.exports = {
-    createUser,
-    getUsers,
+const deactivateUser = async (req, res) => {
+
+  try {
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    );
+
+    res.json(user);
+
+  } catch (err) {
+
+    res.status(500).json({ msg: err.message });
+
+  }
 };
+
+module.exports = { getUsers, deactivateUser };
