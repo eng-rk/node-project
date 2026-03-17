@@ -4,7 +4,9 @@ const router = express.Router();
 const {
   submitLeave,
   reviewLeave,
-  getMyLeaves
+  getMyLeaves,
+  cancelLeave,
+  getTeamLeaves
 } = require("../controllers/leaveControllers");
 
 const { verifyToken, checkRole } = require("../middleware/auth");
@@ -19,5 +21,9 @@ router.post(
   checkRole(["manager", "admin"]),
   reviewLeave
 );
+
+router.patch("/:id/cancel", verifyToken, cancelLeave);
+
+router.get("/team", verifyToken, checkRole(["manager", "admin"]), getTeamLeaves);
 
 module.exports = router;

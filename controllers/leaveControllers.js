@@ -123,8 +123,47 @@ const getMyLeaves = async (req, res) => {
   }
 };
 
+const cancelLeave = async (req, res) => {
+  try {
+    const request = await LeaveRequest.findOne({
+      _id: req.params.id,
+      employeeId: req.user.id
+    });
+
+    if (!request) return res.status(404).json({ msg: "Request not found" });
+
+    if (request.status !== "Pending") {
+      return res.status(400).json({ msg: "Only pending requests can be cancelled" });
+    }
+
+    request.status = "Cancelled";
+    await request.save();
+
+    res.json({ msg: "Leave cancelled", request });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const getTeamLeaves = async (req, res) => {
+  try {
+    const teamMembers = await User.find({ managerId: req.user.id }).select("_id");
+    const memberIds = teamMembers.map(member => member._id);
+
+    const leaves = await LeaveRequest.find({ employeeId: { $in: memberIds } })
+      .populate("employeeId", "username email leaveBalance")
+      .sort({ createdAt: -1 });
+
+    res.json(leaves);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   submitLeave,
   reviewLeave,
-  getMyLeaves
+  getMyLeaves,
+  cancelLeave,
+  getTeamLeaves
 };

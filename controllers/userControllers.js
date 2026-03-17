@@ -34,4 +34,42 @@ const deactivateUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, deactivateUser };
+const updateProfile = async (req, res) => {
+  try {
+    const { username, email } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    if (username) user.username = username;
+    if (email) user.email = email;
+
+    await user.save();
+
+    res.json({ msg: "Profile updated", user });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { role, managerId } = req.body;
+    const user = await User.findById(req.params.id);
+    
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    if (role) user.role = role;
+    if (managerId !== undefined) {
+      user.managerId = managerId || null;
+    }
+
+    await user.save();
+
+    res.json({ msg: "User updated", user });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+module.exports = { getUsers, deactivateUser, updateProfile, updateUser };
