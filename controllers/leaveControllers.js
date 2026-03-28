@@ -147,10 +147,14 @@ const cancelLeave = async (req, res) => {
 
 const getTeamLeaves = async (req, res) => {
   try {
-    const teamMembers = await User.find({ managerId: req.user.id }).select("_id");
-    const memberIds = teamMembers.map(member => member._id);
+    let query = {};
+    if (req.user.role !== 'admin') {
+      const teamMembers = await User.find({ managerId: req.user.id }).select("_id");
+      const memberIds = teamMembers.map(member => member._id);
+      query = { employeeId: { $in: memberIds } };
+    }
 
-    const leaves = await LeaveRequest.find({ employeeId: { $in: memberIds } })
+    const leaves = await LeaveRequest.find(query)
       .populate("employeeId", "username email leaveBalance")
       .sort({ createdAt: -1 });
 
