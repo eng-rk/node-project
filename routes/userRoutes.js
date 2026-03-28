@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { getUsers, deactivateUser, updateUser, updateProfile } = require("../controllers/userControllers");
+const { getUsers, deactivateUser, updateUser, updateProfile, getProfile } = require("../controllers/userControllers");
 
 const { verifyToken, checkRole } = require("../middleware/auth");
 
 router.get("/", verifyToken, checkRole(["admin"]), getUsers);
+router.get("/profile", verifyToken, getProfile);
 
 router.patch(
   "/:id/deactivate",

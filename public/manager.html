@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard - LeaveTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <main class="main-content">
+        <div class="dashboard-stats glass-container">
+            <div class="stat-card">
+                <span class="stat-title">Pending Team Approvals</span>
+                <span class="stat-value" id="pending-count">--</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">Total Processed</span>
+                <span class="stat-value" id="processed-count">--</span>
+            </div>
+        </div>
+
+        <div class="glass-container">
+            <h3 style="margin-bottom: 1rem;">Team Leave Requests</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Days</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="team-leave-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="/js/manager.js"></script>
+</body>
+</html>

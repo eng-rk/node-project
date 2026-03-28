@@ -6,7 +6,21 @@ const register = async (req, res) => {
 
   try {
 
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
+
+    // Validation: First and Last name required
+    if (!username || username.trim().split(/\s+/).length < 2) {
+      return res.status(400).json({ msg: "Please provide both first and last name" });
+    }
+
+    // Validation: Password length and complexity
+    // 8-20 characters, at least one special character
+    const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{8,20}$/;
+    if (!password || !passwordRegex.test(password)) {
+      return res.status(400).json({ 
+        msg: "Password must be 8-20 characters long and contain at least one special character" 
+      });
+    }
 
     const userExists = await User.findOne({ email });
 
@@ -18,7 +32,8 @@ const register = async (req, res) => {
     const user = await User.create({
       username,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: role || "employee"
     });
 
     res.status(201).json({

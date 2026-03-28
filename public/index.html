@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeaveTrack - Employee Leave Management System</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="auth-wrapper">
+        <div class="glass-container auth-box" id="auth-container">
+            <!-- Login Form -->
+            <div id="login-form-view">
+                <h2>Welcome Back</h2>
+                <p>Sign in to LeaveTrack</p>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <div class="auth-switch">
+                        Don't have an account? <a href="#" id="show-register">Register here</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Registration Form (Hidden by default) -->
+            <div id="register-form-view" style="display: none;">
+                <h2>Create Account</h2>
+                <p>Join LeaveTrack</p>
+
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-username">Full Name</label>
+                        <input type="text" id="reg-username" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" class="form-control" placeholder="you@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-role">Role (Admin will verify manager assignments)</label>
+                        <select id="reg-role" class="form-control" required>
+                            <option value="employee">Employee</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <div class="auth-switch">
+                        Already have an account? <a href="#" id="show-login">Sign in</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+</html>

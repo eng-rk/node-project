@@ -2,11 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const port = 7000;
 
 app.use(express.json());
+app.use(cors());
+
 // Serve frontend static files
 app.use(express.static('public'));
 const leaveRoutes = require("./routes/leaveRoutes");
