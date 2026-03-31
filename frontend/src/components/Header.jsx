@@ -1,11 +1,15 @@
 import React from 'react';
 
-const Header = ({ title, user, logout }) => {
+const Header = ({ user, logout }) => {
   return (
     <header className="app-header">
       <div className="nav-brand">
-        LeaveTrack <span>{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)} Portal</span>
+        LeaveTrack{' '}
+        <span>
+          {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)} Portal
+        </span>
       </div>
+
       <div className="nav-links">
         {user && (
           <>
