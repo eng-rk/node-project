@@ -1,11 +1,34 @@
 const LeaveRequest = require("../models/LeaveRequest");
 const User = require("../models/User");
+const Joi = require("joi");
+
+const submitLeaveSchema = Joi.object({
+  type: Joi.string().optional(),
+  startDate: Joi.date().iso().required(),
+  endDate: Joi.date().iso().min(Joi.ref('startDate')).required()
+    .messages({ 'date.min': 'End date cannot be before start date' }),
+  reason: Joi.string().when('type', {
+    is: 'Other',
+    then: Joi.string().required(),
+    otherwise: Joi.string().allow('', null).optional()
+  })
+}).unknown(true);
+
+const reviewLeaveSchema = Joi.object({
+  requestId: Joi.string().required(),
+  status: Joi.string().valid('Approved', 'Rejected').required()
+}).unknown(true);
 
 const submitLeave = async (req, res) => {
 
   try {
 
-    const { startDate, endDate, reason } = req.body;
+    const { error, value } = submitLeaveSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ msg: error.details[0].message });
+    }
+
+    const { type, startDate, endDate, reason } = value;
     const employeeId = req.user.id;
 
     const start = new Date(startDate);
@@ -17,8 +40,23 @@ const submitLeave = async (req, res) => {
     if (end < start)
       return res.status(400).json({ msg: "End date cannot be before start date" });
 
-    const diffTime = Math.abs(end - start);
-    const totalDays = Math.ceil(diffTime / (1000*60*60*24)) + 1;
+    let totalDays = 0;
+    let currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
+    const endDateObj = new Date(end);
+    endDateObj.setHours(0, 0, 0, 0);
+
+    while (currentDate <= endDateObj) {
+      const dayOfWeek = currentDate.getDay();
+      if (dayOfWeek !== 5 && dayOfWeek !== 6) { // 5=Friday, 6=Saturday
+        totalDays++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    if (totalDays === 0) {
+      return res.status(400).json({ msg: "Leave request must include at least one working day" });
+    }
 
     const overlap = await LeaveRequest.findOne({
       employeeId,
@@ -38,6 +76,7 @@ const submitLeave = async (req, res) => {
 
     const request = await LeaveRequest.create({
       employeeId,
+      type: type || "Annual",
       startDate,
       endDate,
       totalDays,
@@ -60,7 +99,12 @@ const reviewLeave = async (req, res) => {
 
   try {
 
-    const { requestId, status } = req.body;
+    const { error, value } = reviewLeaveSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ msg: error.details[0].message });
+    }
+
+    const { requestId, status } = value;
 
     const request = await LeaveRequest.findById(requestId);
 

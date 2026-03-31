@@ -1,4 +1,20 @@
 const User = require("../models/User");
+const Joi = require("joi");
+
+const updateProfileSchema = Joi.object({
+  username: Joi.string().custom((value, helpers) => {
+    if (value.trim().split(/\\s+/).length < 2) {
+      return helpers.message("Please provide both first and last name");
+    }
+    return value;
+  }).optional(),
+  email: Joi.string().email().optional()
+}).unknown(true);
+
+const updateUserSchema = Joi.object({
+  role: Joi.string().valid("employee", "manager", "admin").optional(),
+  managerId: Joi.string().allow(null, "").optional()
+}).unknown(true);
 
 const getUsers = async (req, res) => {
 
@@ -36,7 +52,11 @@ const deactivateUser = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { username, email } = req.body;
+    const { error, value } = updateProfileSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ msg: error.details[0].message });
+    }
+    const { username, email } = value;
     const user = await User.findById(req.user.id);
     
     if (!user) return res.status(404).json({ msg: "User not found" });
@@ -54,7 +74,11 @@ const updateProfile = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { role, managerId } = req.body;
+    const { error, value } = updateUserSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ msg: error.details[0].message });
+    }
+    const { role, managerId } = value;
     const user = await User.findById(req.params.id);
     
     if (!user) return res.status(404).json({ msg: "User not found" });

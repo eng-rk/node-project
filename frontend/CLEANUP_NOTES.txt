@@ -1,0 +1,6 @@
+Frontend cleanup performed:
+- Removed unused src/App.css (leftover template styles, not imported by app)
+- Removed unused template assets: src/assets/react.svg, src/assets/vite.svg, src/assets/hero.png
+- Removed frontend/README.md template file
+
+No functional frontend code was changed.
