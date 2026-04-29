@@ -6,11 +6,14 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 require('dotenv').config();
 
+const logger = require('./middleware/logger');
+
 const app = express();
 const port = 8000;
 
 app.use(express.json());
 app.use(cors());
+app.use(logger);
 
 // Serve React frontend static files
 app.use(express.static(path.join(__dirname, 'frontend', 'dist')));

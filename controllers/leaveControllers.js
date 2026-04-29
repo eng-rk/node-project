@@ -60,7 +60,7 @@ const submitLeave = async (req, res) => {
 
     const overlap = await LeaveRequest.findOne({
       employeeId,
-      status: { $ne: "Rejected" },
+      status: { $nin: ["Rejected", "Cancelled"] },
       $or: [
         { startDate: { $lte: end }, endDate: { $gte: start } }
       ]
@@ -111,28 +111,35 @@ const reviewLeave = async (req, res) => {
     if (!request)
       return res.status(404).json({ msg: "Request not found" });
 
+    const oldStatus = request.status;
+
+    if (oldStatus === status) {
+        return res.status(400).json({ msg: `Request is already ${status.toLowerCase()}` });
+    }
+
     const employee = await User.findById(request.employeeId);
 
     if (req.user.role === "manager") {
-
-      if (!employee.managerId ||
-          employee.managerId.toString() !== req.user.id) {
-        return res.status(403).json({
-          msg: "You can only review your team's requests"
-        });
+      if (!employee.managerId || employee.managerId.toString() !== req.user.id) {
+        return res.status(403).json({ msg: "You can only review your team's requests" });
       }
-
     }
 
-    if (status === "Approved") {
+    // Only "Annual", "Personal", and "Other" deduct from balance. "Sick" and "Unpaid" are exempt.
+    const isPaidLeave = !["Sick", "Unpaid"].includes(request.type);
 
-      if (employee.leaveBalance < request.totalDays) {
-        return res.status(400).json({ msg: "Insufficient leave balance" });
-      }
-
-      employee.leaveBalance -= request.totalDays;
-      await employee.save();
-
+    if (isPaidLeave) {
+        if (status === "Approved") {
+            // New approval: Check and deduct
+            if (employee.leaveBalance < request.totalDays) {
+                return res.status(400).json({ msg: "Insufficient leave balance" });
+            }
+            employee.leaveBalance -= request.totalDays;
+        } else if (oldStatus === "Approved") {
+            // Changing from Approved to something else: Refund balance
+            employee.leaveBalance += request.totalDays;
+        }
+        await employee.save();
     }
 
     request.status = status;
@@ -141,7 +148,7 @@ const reviewLeave = async (req, res) => {
 
     await request.save();
 
-    res.json({ msg: `Request ${status}` });
+    res.json({ msg: `Request ${status}`, currentBalance: isPaidLeave ? employee.leaveBalance : undefined });
 
   } catch (err) {
 

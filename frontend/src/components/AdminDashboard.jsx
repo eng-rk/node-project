@@ -23,7 +23,7 @@ const AdminDashboard = ({ user, logout, showToast }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to fetch global leaves');
+      if (!res.ok) throw new Error(data.msg || 'Failed to fetch global leaves');
       
       setLeaves(data);
       calculateStats(data);
@@ -39,7 +39,7 @@ const AdminDashboard = ({ user, logout, showToast }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to fetch users');
+      if (!res.ok) throw new Error(data.msg || 'Failed to fetch users');
       
       setUsers(data);
     } catch (err) {

@@ -16,7 +16,7 @@ const ManagerDashboard = ({ user, logout, showToast }) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to fetch team leaves');
+      if (!res.ok) throw new Error(data.msg || 'Failed to fetch team leaves');
       
       setLeaves(data);
       calculateStats(data);

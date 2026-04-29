@@ -5,7 +5,7 @@ const Joi = require("joi");
 
 const registerSchema = Joi.object({
   username: Joi.string().custom((value, helpers) => {
-    if (value.trim().split(/\\s+/).length < 2) {
+    if (value.trim().split(/\s+/).length < 2) {
       return helpers.message("Please provide both first and last name");
     }
     return value;
